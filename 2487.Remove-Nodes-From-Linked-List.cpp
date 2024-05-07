@@ -43,7 +43,6 @@ int main()
 {
     ListNode *head = new ListNode(5, new ListNode(2, new ListNode(13, new ListNode(3, new ListNode(8)))));
 ;
-
     Solution solution; 
-    ListNode *result = solution.removeNodes(head->next);
+    ListNode *result = solution.removeNodes(head);
 }
