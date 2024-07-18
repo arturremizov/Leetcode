@@ -32,8 +32,8 @@ private:
         if (to_delete_set.count(node->val)) {
             result = NULL;
             result_set.erase(node);
-            if (node->left) result_set.erase(node->left);
-            if (node->right) result_set.erase(node->right);
+            if (node->left) result_set.insert(node->left);
+            if (node->right) result_set.insert(node->right);
         }
         node->left = dfs(node->left, to_delete_set, result_set);
         node->right = dfs(node->right, to_delete_set, result_set);
