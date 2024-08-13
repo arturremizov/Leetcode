@@ -9,17 +9,18 @@ public:
     vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
         vector<vector<int>> result;
         sort(candidates.begin(), candidates.end());
-        backtrack(candidates, 0, {}, 0, target, result);
+        vector<int> current;
+        backtrack(candidates, 0, current, 0, target, result);
         return result;
     }
 private:
-    void backtrack(vector<int>& candidates, int i, vector<int> current, int total, int target, vector<vector<int>>& result) {
-        if (total > target || i == candidates.size()) return;
-
+    void backtrack(vector<int>& candidates, int i, vector<int>& current, int total, int target, vector<vector<int>>& result) {
         if (total == target) {
             result.push_back(current);
             return;
         }
+        
+        if (total > target || i == candidates.size()) return;
 
         // include candidates[i]
         current.push_back(candidates[i]);
