@@ -4,49 +4,59 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <queue>
-
 using namespace std;
 
 class Solution {
 public:
-    long long minimumCost(string source, string target, vector<char>& original, vector<char>& changed, vector<int>& cost) {
-        unordered_map<char, vector<pair<char, int>>> adj_list;
-        for (int i = 0; i < original.size(); ++i) {
-            char src = original[i];
-            char dest = changed[i];
-            int weight = cost[i];
-            adj_list[src].push_back({dest, weight});
+    long long minimumCost(string source, 
+                          string target,
+                          vector<char>& original, 
+                          vector<char>& changed,
+                          vector<int>& cost) {
+
+        const int n = source.length(), m = original.size();
+        unordered_map<char, vector<pair<char, int>>> adj;
+        for (int i = 0; i < m; ++i) {
+            adj[original[i]].push_back({changed[i], cost[i]});
         }
 
-        unordered_map<char, unordered_map<char, long long>> min_cost_maps;
-        unordered_set<char> source_set(source.begin(), source.end());
-        for (char c : source_set) {
-            min_cost_maps[c] = dijkstra(c, adj_list);
+        unordered_set<char> sourceChars(source.begin(), source.end());
+        unordered_map<char, unordered_map<char, long long>> minCost;
+        for (char c : sourceChars) {
+            helper(c, adj, minCost);
         }
 
         long long result = 0;
-        for (int i = 0; i < source.size(); ++i) {
-            char src = source[i], dst = target[i];
-            if (!min_cost_maps[src].count(dst)) return -1;
-            result += min_cost_maps[src][dst];
+        for (int i = 0; i < n; ++i) {
+            if (source[i] == target[i]) continue;
+            if (!minCost[source[i]].count(target[i])) return -1;
+            result += minCost[source[i]][target[i]];
         }
         return result;
     }
 private:
-    unordered_map<char, long long> dijkstra(char src, unordered_map<char, vector<pair<char, int>>>& adj_list) {
-        priority_queue<pair<long long, char>, vector<pair<long long, char>>, greater<pair<long long, char>>> min_heap;
-        min_heap.push({0, src});
-        unordered_map<char, long long> min_cost_map;
-        while (!min_heap.empty()) {
-            auto [weight, node] = min_heap.top();
-            min_heap.pop();
-            if (min_cost_map.count(node)) continue;
-            min_cost_map[node] = weight;
-            for (auto [neighbor, nei_weight] : adj_list[node]) {
-                min_heap.push({weight + nei_weight, neighbor});
+    void helper(char source, 
+                unordered_map<char, vector<pair<char, int>>>& adj, 
+                unordered_map<char, unordered_map<char, long long>>& minCost) {
+        
+        priority_queue<pair<long long, char>,
+                       vector<pair<long long, char>>,
+                       greater<>> minHeap;
+
+        minHeap.push({0, source});
+        minCost[source][source] = 0;
+        while (!minHeap.empty()) {
+            auto [cost, node] = minHeap.top();
+            minHeap.pop();
+            if (cost > minCost[source][node]) continue;
+            for (auto [neighborNode, neighborCost] : adj[node]) {
+                if (!minCost[source].count(neighborNode) || 
+                    minCost[source][neighborNode] > cost + neighborCost) {
+                    minCost[source][neighborNode] = cost + neighborCost;
+                    minHeap.push({cost + neighborCost, neighborNode});
+                }
             }
         }
-        return min_cost_map;
     }
 };
 
