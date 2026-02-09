@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-
 using namespace std;
 
 struct TreeNode {
@@ -15,34 +14,32 @@ struct TreeNode {
 class Solution {
 public:
     TreeNode* balanceBST(TreeNode* root) {
-        vector<int> nodes;
-        inOrderDfs(root, nodes);
-        return buildBalanceBST(nodes, 0, nodes.size() - 1);
+        vector<int> inOrderNodeValues;
+        dfs(root, inOrderNodeValues);
+        return makeBalanceBST(0, inOrderNodeValues.size() - 1, inOrderNodeValues);
     }
 private:
-    void inOrderDfs(TreeNode* root, vector<int>& nodes) {
-        if (root == NULL) return;
-        inOrderDfs(root->left, nodes);
-        nodes.push_back(root->val);
-        inOrderDfs(root->right, nodes);
+    void dfs(TreeNode* root, vector<int>& nodeValues) {
+        if (root == nullptr) return;
+        dfs(root->left, nodeValues);
+        nodeValues.push_back(root->val);
+        dfs(root->right, nodeValues);
     }
-    TreeNode* buildBalanceBST(const vector<int>& nodes, int left, int right) {
-        if (left > right) return NULL;
+    TreeNode* makeBalanceBST(int left, int right, const vector<int>& nodeValues) {
+        if (left > right) return nullptr;
         int mid = (left + right) / 2;
-        TreeNode* node = new TreeNode(nodes[mid]);
-        node->left = buildBalanceBST(nodes, left, mid - 1);
-        node->right = buildBalanceBST(nodes, mid + 1, right);
-        return node;
+        TreeNode *root = new TreeNode(nodeValues[mid]);
+        root->left = makeBalanceBST(left, mid - 1, nodeValues);
+        root->right = makeBalanceBST(mid + 1, right, nodeValues);
+        return root;
     }
 };
 
-int main() 
-{
+int main() {
     TreeNode* root = new TreeNode(1);
     root->right = new TreeNode(2);
     root->right->right = new TreeNode(3);
     root->right->right->right = new TreeNode(4);
-
     Solution solution;
-    TreeNode* newRoot = solution.balanceBST(root);
+    TreeNode* result = solution.balanceBST(root);
 }
