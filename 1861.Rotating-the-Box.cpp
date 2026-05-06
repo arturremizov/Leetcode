@@ -5,27 +5,22 @@ using namespace std;
 class Solution {
 public:
     vector<vector<char>> rotateTheBox(vector<vector<char>>& box) {
-        const int rows = box.size(), cols = box[0].size();
-        for (int row = 0; row < rows; ++row) {
-            int i = cols - 1;
-            for (int col = cols - 1; col >= 0; --col) {
+        const int n = box.size(), m = box[0].size();
+        vector result = vector(m, vector(n, '.'));
+        for (int row = 0; row < n; ++row) {
+            int rotatedRow = m - 1;
+            const int rotatedCol = n - row - 1; 
+            for (int col = m - 1; col >= 0; --col) {
                 if (box[row][col] == '#') {
-                    swap(box[row][col], box[row][i]);
-                    --i;
+                    result[rotatedRow][rotatedCol] = '#';
+                    --rotatedRow;
                 } else if (box[row][col] == '*') {
-                    i = col - 1;
+                    result[col][rotatedCol] = '*';
+                    rotatedRow = col - 1;
                 }
             }
         }
-        vector<vector<char>> result;
-        for (int col = 0; col < cols; ++col) {
-            vector<char> column;
-            for (int row = rows - 1; row >= 0; --row) {
-                column.push_back(box[row][col]);
-            }
-            result.push_back(column);
-        }
-        return result;        
+        return result;     
     }
 };
 
