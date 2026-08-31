@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <climits>
-
 using namespace std;
 
 struct ListNode {
@@ -15,43 +14,37 @@ struct ListNode {
 class Solution {
 public:
     vector<int> nodesBetweenCriticalPoints(ListNode* head) {
-        ListNode *prev = head, *current = head->next, *next = current->next;
-        int min_dist = INT_MAX, max_dist = -1;
-
-        int prev_crit_idx = 0;
-        int first_crit_idx = 0;
-        int i = 1; // index of current
-
-        while (next) {
-            if (isCritical(prev, current, next)) {
-                if (first_crit_idx) {
-                    max_dist = i - first_crit_idx;
-                    min_dist = min(min_dist, i - prev_crit_idx);
+        int minDistance = INT_MAX, maxDistance = -1;
+        int firstPoint = -1, prevPoint = -1;
+        ListNode *prev = head, *cur = head->next;
+        int i = 1;
+        while (cur->next) {
+            if (isCriticalPoint(prev, cur, cur->next)) {
+                if (firstPoint == -1) {
+                    firstPoint = i;
                 } else {
-                    first_crit_idx = i;
+                    minDistance = min(minDistance, i - prevPoint);
+                    maxDistance = i - firstPoint;
                 }
-                prev_crit_idx = i;
+                prevPoint = i;
             }
-            prev = current;
-            current = next;
-            next = next->next;
+            prev = cur;
+            cur = cur->next;
             ++i;
         }
-
-        if (min_dist == INT_MAX) {
-            min_dist = -1;
+        if (minDistance == INT_MAX) {
+            minDistance = -1;
         }
-        return {min_dist, max_dist};
+        return {minDistance, maxDistance};
     }
 private:
-    bool isCritical(ListNode *prev, ListNode *current, ListNode *next) {
-        return (prev->val > current->val && current->val < next->val) || 
-               (prev->val < current->val && current->val > next->val);
-    } 
+    bool isCriticalPoint(ListNode* prev, ListNode* cur, ListNode* next) {
+        return (prev->val > cur->val && cur->val < next->val) ||
+               (prev->val < cur->val && cur->val > next->val);
+    }
 };
 
-int main() 
-{
+int main() {
     Solution solution; 
     ListNode *root = new ListNode(5);
     root->next = new ListNode(3);
@@ -61,7 +54,5 @@ int main()
     root->next->next->next->next->next = new ListNode(1);
     root->next->next->next->next->next->next = new ListNode(2);
     vector<int> result = solution.nodesBetweenCriticalPoints(root); // [1,3]
-    for (int num : result) {
-        cout << num << ",";
-    }
+    cout << "[" << result[0] << "," << result[1] << "]\n";
 }
